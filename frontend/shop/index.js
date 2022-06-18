@@ -103,3 +103,16 @@ function displayConfirmed(){
 
 // When the page opens
 window.onload = displayNew;
+
+// hide modal if clicked outside
+var firstclick = 1; //after opening a modal (the first click might be outside)
+document.addEventListener('click', function handleClickOutsideBox(event) {
+    if(!firstclick){
+        if (!modal.contains(event.target)) {
+        window.location.reload();
+        }
+        }else{
+            firstclick = 0;
+    }
+});
+  
