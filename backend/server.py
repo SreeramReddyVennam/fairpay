@@ -1,11 +1,12 @@
 import json as jsn
 from flask import *
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 app = Flask(__name__)
-client = MongoClient('mongodb+srv://herocharge:herocharge@cluster0.ly1r8.mongodb.net/?retryWrites=true&w=majority', 27017, username='herocharge', password='herocharge')
+client = MongoClient("mongodb+srv://vnnm:Password!_404@main.gtvbo.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
-db = client.fairplay
+db = client.myFirstDatabase
 
 @app.route('/resources/menu/<shop>')
 def menu(shop):
@@ -15,11 +16,10 @@ def menu(shop):
     for r in results:
         res.append(str(r))
     return str(res)
-    None
 
 @app.route('/')
 def client():
-    None
+    return render_template('client.html')
 
 @app.route('/shop')
 def shop():

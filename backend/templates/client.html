@@ -1,8 +1,45 @@
-let menu = document.getElementById('menu');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+#menu {
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <div id="select-shop">
+        <button onclick="displayBBC()">BBC</button>
+        <br>
+        <button onclick="displayJC()">JC</button>
+        <br>
+        <button onclick="displayVC()">VC</button>
+        <br>
+    </div>
+    <div id="menu">
+        <h1 id="menu-heading"></h1>
+        <form id="menu-form" action="">
+            <table id="menu-table" border="2">
+                <tbody>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div> 
+    <script>
+        let menu = document.getElementById('menu');
 let menuHeading = document.getElementById('menu-heading');
 let tableEntries = 0;
 
-url = window.location.href + '/resources/main/'
+url = window.location.href + 'resources/menu/'
 
 function httpGet(theUrl) {
     var xmlHttp = new XMLHttpRequest();
@@ -34,7 +71,7 @@ function displayMenu(shop) {
     }
     tableEntries = 0;
 
-    for (const [key, value] of Object.entries(menuItems[shop])) {
+   for (const item of menuItems[shop]) {
         let newRow = menuTableBody.insertRow(tableEntries + 1);
         tableEntries += 1;
 
@@ -45,9 +82,11 @@ function displayMenu(shop) {
         let entryName = newRow.insertCell(0);
         let entryPrice = newRow.insertCell(1);
         let entryQuantity = newRow.insertCell(2);
-
-        entryName.innerHTML = key;
-        entryPrice.innerHTML = value;
+        console.log(menuItems[shop]);
+        console.log(('{' + item.slice(45)).replaceAll('\'', '\"'));
+        entryName.innerHTML = JSON.parse(('{' + item.slice(45)).replaceAll('\'', '\"'))['item'];
+        entryPrice.innerHTML = JSON.parse((('{' + item.slice(45)).replaceAll('\'', '\"')))['price'];
+        console.log()
         entryQuantity.append(quantityInput);
     }
 
@@ -74,3 +113,6 @@ function displayVC() {
     menuHeading.innerHTML = "VC";
     displayMenu('vc');
 }
+    </script>
+</body>
+</html>
