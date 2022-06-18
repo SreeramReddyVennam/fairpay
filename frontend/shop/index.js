@@ -109,7 +109,8 @@ var firstclick = 1; //after opening a modal (the first click might be outside)
 document.addEventListener('click', function handleClickOutsideBox(event) {
     if(!firstclick){
         if (!modal.contains(event.target)) {
-        window.location.reload();
+            firstclick = 1;
+        closeModal();
         }
         }else{
             firstclick = 0;
