@@ -25,3 +25,32 @@ body{
 .order-button:hover{
     cursor: pointer;
 }
+
+#modal{
+    display: none;
+    position: fixed;
+    top:10vh;
+    left: 10vw;
+    background-color: white;
+    border: 1px solid black;
+    box-shadow: 5px 10px #888888;
+    height: 80vh;
+    width: 80vw;
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+}
+
+#close-button{
+    position:inherit;
+    right: 10vw;
+    top: 11vh;
+    background-color: transparent;
+    border: none;
+    color: gray;
+    font-size: 30px;
+}
+
+#close-button:hover{
+    cursor: pointer;
+}

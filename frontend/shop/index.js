@@ -1,6 +1,6 @@
 const MAX_ORDER_DISPLAY_LENGTH = 50;
 
-var newOrders  = [{id: 100, items: "oreo, banana, chocolate"},{id: 100, items: "oreo, banana, chocolate"},{id: 100, items: "oreo, banana, chocolate"}   ];
+var newOrders  = [{id: 100, items: "oreo, banana, chocolate"},{id: 105, items: "orasda, banana, chocolate"},{id: 110, items: "ona, chocolate"}   ];
 var requestedOrders  = [{id: 101, items: "oreo, banana"}];
 var confirmedOrders  = [{id: 102, items: "banana, chocolate"}];
 
@@ -15,6 +15,24 @@ function changeTabStyle(index){
         else
             tab.style.borderBottomColor = "gray";
     }
+}
+
+function closeModal(){
+    var modal = document.getElementById("modal");
+    modal.style.display = "none";
+}
+
+function showModal(order){
+    var modal = document.getElementById("modal");
+    modal.style.display = "block";
+    modal.innerHTML = order.id + " " + order.items;
+    var closeButton = document.createElement('button');
+    closeButton.addEventListener('click', ()=>{
+        closeModal();
+    });
+    closeButton.innerHTML = "X";
+    closeButton.setAttribute('id', 'close-button');
+    modal.appendChild(closeButton);
 }
 
 // represents the type of orders being displayed on screen
@@ -36,7 +54,9 @@ function displayNew(){
         button.setAttribute("class", "order-button"); // same styling for all orders
         button.innerHTML = "#" + order.id + " " + order.items.slice(0, MAX_ORDER_DISPLAY_LENGTH)+"...";
         // TODO: make a modal, on clicking
-        // button.addEventListener('click', showModal(order));
+        button.addEventListener('click', ()=>{
+            showModal(order)
+        });
         contentTable.appendChild(button);
     }
 
