@@ -23,9 +23,13 @@ client = MongoClient("mongodb+srv://vnnm:Password!_404@main.gtvbo.mongodb.net/?r
 
 db = client.myFirstDatabase
 
-@app.route('/generate/cookie')
-def cookie():
-    None
+def get_price(item, shop):
+    prices = db[shop+"_menu"]
+    item_price = prices.find_one({'item': item})
+    return int(item_price['price'])
+
+def gen_order_id():
+    return str(random.randint(1000, 9999))
 
 def gen_hash():
     return str(random.getrandbits(128))
@@ -38,7 +42,7 @@ def check_password(usrname, password):
 
 @app.route('/generate/cookie', methods=['GET'])
 def cookie_gen():
-    return 
+    return gen_hash()
 
 @app.route('/resources/menu/<shop>')
 def menu(shop):
@@ -58,16 +62,32 @@ def client():
     return resp
     
 
-@app.route('/orders', methods=['POST', 'GET'])
+@app.route('/orders', methods=['GET'])
 def process_orders():
-    if request.method == 'GET':
-        ck = request.cookies.get('fairpay')
-        if ck is None:
-            return ""
-        return jsn.dumps(active_orders[ck])
-    else:
-        # process request
-        None
+    ck = request.cookies.get('fairpay')
+    if ck is None:
+        return ""
+    return jsn.dumps(active_orders[ck])
+
+@app.route('/orders/<shop>', methods=['POST'])
+def make_order(shop):
+    ck = request.cookies.get('fairpay')
+    form_items = request.form
+    ord_id = gen_order_id()
+    if ck not in active_orders:
+        active_orders[ck] = {}
+    active_orders[ck][ord_id] = {
+        'shop': shop
+    }
+    active_orders[ck][ord_id]['items'] = []
+    total = 0
+    for k, v in form_items.items():
+        total += int(v) * get_price(k, shop)
+        active_orders[ck][ord_id]['items'].append((k, int(v), get_price(k, shop)))
+    active_orders[ck][ord_id]['total'] = total
+    active_orders[ck][ord_id]['status'] = 'sent'
+    print(active_orders)
+    return redirect(url_for('client'))
 
 @app.route('/login', methods = ['GET', 'POST'])
 def merchant_login():
