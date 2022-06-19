@@ -2,24 +2,26 @@ let menu = document.getElementById('menu');
 let menuHeading = document.getElementById('menu-heading');
 let tableEntries = 0;
 
-let bbcMenu = {
-    'item1': 'price1',
-    'item2': 'price2',
-};
-let jcMenu = {
-    'item1': 'price3',
-    'item2': 'price4',
-};
-let vcMenu = {
-    'item1': 'price5',
-    'item2': 'price6',
-};
+url = window.location.href + '/resources/main/'
+
+function httpGet(theUrl) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+let bbcMenu = JSON.parse(httpGet(url + 'bbc'))
+let jcMenu = JSON.parse(httpGet(url + 'jc'))
+let vcMenu = JSON.parse(httpGet(url + 'vc'))
 
 let menuItems = {
     'bbc': bbcMenu,
     'jc': jcMenu,
     'vc': vcMenu,
 };
+
+console.log(menuItems);
 
 function displayMenu(shop) {
 

@@ -3,6 +3,7 @@ import uuid
 import json as jsn
 from flask import *
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 active_orders = {
     # hash: {
@@ -15,12 +16,17 @@ active_orders = {
     # }
 }
 
+shop_cookies = {}
 user_cookies = {}
 
 app = Flask(__name__)
-client = MongoClient('mongodb+srv://herocharge:herocharge@cluster0.ly1r8.mongodb.net/?retryWrites=true&w=majority', 27017, username='herocharge', password='herocharge')
+client = MongoClient("mongodb+srv://vnnm:Password!_404@main.gtvbo.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
-db = client.fairplay
+db = client.myFirstDatabase
+
+@app.route('/generate/cookie')
+def cookie():
+    None
 
 def gen_hash():
     return str(uuid.uuid4().hex)
@@ -43,7 +49,6 @@ def menu(shop):
     for r in results:
         res.append(str(r))
     return str(res)
-    None
 
 @app.route('/')
 def client():
@@ -66,7 +71,7 @@ def merchant_login():
     resp = make_response(redirect(url_for('shop')))
     ck = gen_hash()
     resp.set_cookie('fairpay-merchange',ck)
-    user_cookies[ck] = request.form['username']
+    shop_cookies[ck] = request.form['username']
     return resp
 
 @app.route('/shop')
@@ -83,7 +88,7 @@ def shop_orders():
     ck = request.cookies.get('fairplay-merchant')
     active_shop_orders = {}
     for (key, value) in active_orders:
-        if value['shop'] == user_cookies[ck]:
+        if value['shop'] == shop_cookies[ck]:
             active_orders[key] = value
     return json.dumps(active_shop_orders)
 

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+#menu {
+    display: none;
+}
+
+#orders-list {
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <div id="select-shop">
+        <button onclick="displayBBC()">BBC</button>
+        <br>
+        <button onclick="displayJC()">JC</button>
+        <br>
+        <button onclick="displayVC()">VC</button>
+        <br>
+    </div>
+    <div id="menu">
+        <h1 id="menu-heading"></h1>
+        <form id="menu-form" action="/orders" method="post">
+            <table id="menu-table" border="2">
+                <tbody>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div> 
+    <div id="orders">
+        <h1>Orders</h1>
+        <p id="orders-lackof">No Orders</p>
+        <ol id="orders-list">
+
+        </ol>
+    </div>
+    <script>
+let menu = document.getElementById('menu');
+let menuHeading = document.getElementById('menu-heading');
+let tableEntries = 0;
+
+url = window.location.href + 'resources/menu/'
+
+function httpGet(theUrl) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+function displayOrders() {
+    let orderList = JSON.parse(httpGet(url + 'orders'));
+    let htmlInfo = document.getElementById('orders-lackof');
+    let htmlList = document.getElementById('orders-list');
+
+    if (orderList.length == 0) {
+        htmlList.style['display'] = 'none';
+        htmlInfo.style['display'] = 'block';
+    } else {
+        htmlList.style['display'] = 'block';
+        htmlInfo.style['display'] = 'none';
+
+        for (const [key, val] of orderList) {
+            let newOrder = document.createElement('li');
+            newOrder.innerHTML = `{key}: {val['total']}`;
+        }
+
+        orderList.append(newOrder);
+    }
+}
+
+let bbcMenu = JSON.parse(httpGet(url + 'bbc'))
+let jcMenu = JSON.parse(httpGet(url + 'jc'))
+let vcMenu = JSON.parse(httpGet(url + 'vc'))
+
+let menuItems = {
+    'bbc': bbcMenu,
+    'jc': jcMenu,
+    'vc': vcMenu,
+};
+
+console.log(menuItems);
+
+function displayMenu(shop) {
+    menu.style['display'] = 'block';
+    let menuTableBody = document.getElementById('menu-table')
+        .getElementsByTagName('tbody')[0];
+
+    for (let rowId = 0; rowId < tableEntries; rowId++) {
+        menuTableBody.deleteRow(1);
+    }
+    tableEntries = 0;
+
+   for (const item of menuItems[shop]) {
+        let newRow = menuTableBody.insertRow(tableEntries + 1);
+        tableEntries += 1;
+
+        let quantityInput = document.createElement('input');
+        quantityInput.setAttribute('type', 'number');
+        quantityInput.setAttribute('name', shop);
+
+        let entryName = newRow.insertCell(0);
+        let entryPrice = newRow.insertCell(1);
+        let entryQuantity = newRow.insertCell(2);
+        console.log(menuItems[shop]);
+        console.log(('{' + item.slice(45)).replaceAll('\'', '\"'));
+        entryName.innerHTML = JSON.parse(('{' + item.slice(45)).replaceAll('\'', '\"'))['item'];
+        entryPrice.innerHTML = JSON.parse((('{' + item.slice(45)).replaceAll('\'', '\"')))['price'];
+        console.log()
+        entryQuantity.append(quantityInput);
+    }
+
+    let submitRow = menuTableBody.insertRow(tableEntries + 1);
+    tableEntries += 1;
+
+    let submitButton = document.createElement('input');
+    submitButton.setAttribute('type', 'submit');
+
+    let submitCell = submitRow.insertCell(0);
+    submitCell.setAttribute('colspan', '3');
+    submitCell.append(submitButton);
+}
+
+function displayBBC() {
+    menuHeading.innerHTML = "BBC";
+    displayMenu('bbc');
+}
+function displayJC() {
+    menuHeading.innerHTML = "JC";
+    displayMenu('jc');
+}
+function displayVC() {
+    menuHeading.innerHTML = "VC";
+    displayMenu('vc');
+}
+
+// displayOrders();
+    </script>
+</body>
+</html>
