@@ -82,11 +82,14 @@ function displayOrders() {
         htmlList.style['display'] = 'block';
         htmlInfo.style['display'] = 'none';
 
+        htmlList.innerHTML = "";
+
         for (const [key, val] of Object.entries(orderList)) {
             console.log(key, val);
             
             let newOrder = document.createElement('li');
-            newOrder.innerHTML = key + ':'  + val['total'] + ':' + val['status'];
+            newOrder.innerHTML = '#' + key + '  <br>  '  + val['items'].join('<br>') + '  <br>  ' + 
+                'Status: ' + val['status'];
             htmlList.append(newOrder);
             if (val['status'] == 'requestPay') {
                 var getPaymentButton = document.createElement('button');
@@ -171,7 +174,7 @@ function displayVC() {
     displayMenu('vc');
 }
 
-let displayInterval = setInterval(displayOrders(), 1000);
+let displayInterval = setInterval(displayOrders, 1000);
     </script>
 </body>
 </html>
