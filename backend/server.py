@@ -92,11 +92,11 @@ def make_order(shop):
 @app.route('/shop/login', methods = ['GET', 'POST'])
 def merchant_login():
     if request.cookies.get('fairpay-merchant') != None:
-        return redirect(url_for(shop))
+        return redirect(url_for('shop'))
     if request.method == 'GET':
-        return render_template('login.html', 1)
+        return render_template('login.html')
     if check_password(request.form['username'], request.form['password']) is False:
-        return render_template('login.html', 0)
+        return render_template('login.html')
     resp = make_response(redirect(url_for('shop')))
     ck = gen_hash()
     resp.set_cookie('fairpay-merchant',ck)
@@ -107,11 +107,13 @@ def merchant_login():
 def shop():
     ck = request.cookies.get('fairpay-merchant')
     resp = make_response(render_template('shop.html'))
+    print(ck)
     if ck is None:
-        # return redirect(url_for("merchant_login"))
-        gh = gen_hash()
-        resp.set_cookie('fairpay-merchant', gh);
-        shop_cookies[gh] = 'bbc'
+        print("KLDFLKJSHFJHDLHSF")
+        return redirect(url_for("merchant_login"))
+        #gh = gen_hash()
+        #resp.set_cookie('fairpay-merchant', gh);
+        #shop_cookies[gh] = 'bbc'
     return resp
     # login form
     None
@@ -129,7 +131,7 @@ def shop_orders():
     return json.dumps(active_shop_orders)
 
 @app.route('/shop/orders/update', methods=['POST'])
-def shop_orders():
+def shop_orders_update():
     ck = request.cookies.get('fairplay-merchant')
     req = request.form
     active_orders[req['id']] = req['status']
