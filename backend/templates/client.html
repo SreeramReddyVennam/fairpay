@@ -9,6 +9,10 @@
 #menu {
     display: none;
 }
+
+#orders-list {
+    display: none;
+}
     </style>
 </head>
 <body>
@@ -22,7 +26,7 @@
     </div>
     <div id="menu">
         <h1 id="menu-heading"></h1>
-        <form id="menu-form" action="">
+        <form id="menu-form" action="/orders" method="post">
             <table id="menu-table" border="2">
                 <tbody>
                     <tr>
@@ -34,8 +38,15 @@
             </table>
         </form>
     </div> 
+    <div id="orders">
+        <h1>Orders</h1>
+        <p id="orders-lackof">No Orders</p>
+        <ol id="orders-list">
+
+        </ol>
+    </div>
     <script>
-        let menu = document.getElementById('menu');
+let menu = document.getElementById('menu');
 let menuHeading = document.getElementById('menu-heading');
 let tableEntries = 0;
 
@@ -46,6 +57,27 @@ function httpGet(theUrl) {
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
     xmlHttp.send( null );
     return xmlHttp.responseText;
+}
+
+function displayOrders() {
+    let orderList = JSON.parse(httpGet(url + 'orders'));
+    let htmlInfo = document.getElementById('orders-lackof');
+    let htmlList = document.getElementById('orders-list');
+
+    if (orderList.length == 0) {
+        htmlList.style['display'] = 'none';
+        htmlInfo.style['display'] = 'block';
+    } else {
+        htmlList.style['display'] = 'block';
+        htmlInfo.style['display'] = 'none';
+
+        for (const [key, val] of orderList) {
+            let newOrder = document.createElement('li');
+            newOrder.innerHTML = `{key}: {val['total']}`;
+        }
+
+        orderList.append(newOrder);
+    }
 }
 
 let bbcMenu = JSON.parse(httpGet(url + 'bbc'))
@@ -61,7 +93,6 @@ let menuItems = {
 console.log(menuItems);
 
 function displayMenu(shop) {
-
     menu.style['display'] = 'block';
     let menuTableBody = document.getElementById('menu-table')
         .getElementsByTagName('tbody')[0];
@@ -113,6 +144,8 @@ function displayVC() {
     menuHeading.innerHTML = "VC";
     displayMenu('vc');
 }
+
+// displayOrders();
     </script>
 </body>
 </html>

@@ -8,6 +8,10 @@ client = MongoClient("mongodb+srv://vnnm:Password!_404@main.gtvbo.mongodb.net/?r
 
 db = client.myFirstDatabase
 
+@app.route('/generate/cookie')
+def cookie():
+    None
+
 @app.route('/resources/menu/<shop>')
 def menu(shop):
     shop_menu = db[shop+"_menu"]
