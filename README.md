@@ -3,3 +3,7 @@ A payment system for the users of IIIT based on a queueing system that ensures f
 
 ## Goal
 Preventing malicious practices with respect to transactions. 
+
+## How To Use
+1) Set the server running.
+2) Use Shop and Client Websites.
