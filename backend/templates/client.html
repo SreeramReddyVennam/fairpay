@@ -60,7 +60,8 @@ function httpGet(theUrl) {
 }
 
 function displayOrders() {
-    let orderList = JSON.parse(httpGet(url + 'orders'));
+    let orderList = JSON.parse(httpGet(window.location.href + 'orders'));
+
     let htmlInfo = document.getElementById('orders-lackof');
     let htmlList = document.getElementById('orders-list');
 
@@ -71,12 +72,12 @@ function displayOrders() {
         htmlList.style['display'] = 'block';
         htmlInfo.style['display'] = 'none';
 
-        for (const [key, val] of orderList) {
+        for (const [key, val] of Object.entries(orderList)) {
+            console.log(key, val);
             let newOrder = document.createElement('li');
-            newOrder.innerHTML = `{key}: {val['total']}`;
+            newOrder.innerHTML = key + ':'  + val['total'];
+            htmlList.append(newOrder);
         }
-
-        orderList.append(newOrder);
     }
 }
 
@@ -145,7 +146,7 @@ function displayVC() {
     displayMenu('vc');
 }
 
-// displayOrders();
+displayOrders();
     </script>
 </body>
 </html>

@@ -52,15 +52,23 @@ def menu(shop):
 
 @app.route('/')
 def client():
-    resp = make_response(render_template('index.html'))
-    None
-
-@app.route('/orders')
-def get_orders():
+    resp = make_response(render_template('client.html'))
     ck = request.cookies.get('fairpay')
     if ck is None:
-        return ""
-    return jsn.dumps(active_orders[ck])
+        resp.set_cookie('fairpay', 'bruh1')
+    return resp
+    
+
+@app.route('/orders')
+def process_orders():
+    if request.method == 'GET':
+        ck = request.cookies.get('fairpay')
+        if ck is None:
+            return ""
+        return jsn.dumps(active_orders[ck])
+    else:
+        # process request
+        None
 
 @app.route('/login', methods = ['GET', 'POST'])
 def merchant_login():
