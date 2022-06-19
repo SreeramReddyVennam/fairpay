@@ -85,7 +85,7 @@ def make_order(shop):
         total += int(v) * get_price(k, shop)
         active_orders[ck][ord_id]['items'].append((k, int(v), get_price(k, shop)))
     active_orders[ck][ord_id]['total'] = total
-    active_orders[ck][ord_id]['status'] = 'sent'
+    active_orders[ck][ord_id]['status'] = 'new'
     print(active_orders)
     return redirect(url_for('client'))
 
@@ -133,8 +133,10 @@ def shop_orders():
 @app.route('/shop/orders/update', methods=['POST'])
 def shop_orders_update():
     ck = request.cookies.get('fairplay-merchant')
-    req = request.form
-    active_orders[req['id']] = req['status']
+    req = request.get_json()
+    for k, v in active_orders.items():
+        if  req['id'] in v.keys():
+            v[req['id']]['status'] = req['status']
     return "ok"
 
 

@@ -75,7 +75,7 @@ function displayOrders() {
         for (const [key, val] of Object.entries(orderList)) {
             console.log(key, val);
             let newOrder = document.createElement('li');
-            newOrder.innerHTML = key + ':'  + val['total'];
+            newOrder.innerHTML = key + ':'  + val['total'] + ':' + val['status'];
             htmlList.append(newOrder);
         }
     }
