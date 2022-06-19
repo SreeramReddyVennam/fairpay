@@ -1,5 +1,4 @@
-from random import randint
-import uuid
+import random
 import json as jsn
 from flask import *
 from pymongo import MongoClient
@@ -7,7 +6,7 @@ from pymongo.server_api import ServerApi
 
 active_orders = {
     # hash: {
-    #     orderId: {
+    #     id: {
     #         shop:
     #         items:[(name, price, quantity)]
     #         total: ,
@@ -30,10 +29,10 @@ def get_price(item, shop):
     return int(item_price['price'])
 
 def gen_order_id():
-    return str(randint(1000, 9999))
+    return str(random.randint(1000, 9999))
 
 def gen_hash():
-    return str(uuid.uuid4().hex)
+    return str(random.getrandbits(128))
 
 def check_password(usrname, password):
     login_details = db.shop_login_details.find_one()[usrname]
@@ -73,19 +72,22 @@ def process_orders():
 @app.route('/orders/<shop>', methods=['POST'])
 def make_order(shop):
     ck = request.cookies.get('fairpay')
-    items = request.form
+    form_items = request.form
     ord_id = gen_order_id()
+    if ck not in active_orders:
+        active_orders[ck] = {}
     active_orders[ck][ord_id] = {
-        'shop' : shop,
+        'shop': shop
     }
     active_orders[ck][ord_id]['items'] = []
     total = 0
-    for (k, v) in items:
+    for k, v in form_items.items():
         total += int(v) * get_price(k, shop)
         active_orders[ck][ord_id]['items'].append((k, int(v), get_price(k, shop)))
     active_orders[ck][ord_id]['total'] = total
     active_orders[ck][ord_id]['status'] = 'sent'
-    return "ok"
+    print(active_orders)
+    return redirect(url_for('client'))
 
 @app.route('/shop/login', methods = ['GET', 'POST'])
 def merchant_login():
@@ -97,16 +99,20 @@ def merchant_login():
         return render_template('login.html', 0)
     resp = make_response(redirect(url_for('shop')))
     ck = gen_hash()
-    resp.set_cookie('fairpay-merchant', ck)
+    resp.set_cookie('fairpay-merchant',ck)
     shop_cookies[ck] = request.form['username']
     return resp
 
 @app.route('/shop')
 def shop():
     ck = request.cookies.get('fairpay-merchant')
+    resp = make_response(render_template('shop.html'))
     if ck is None:
-        return redirect(url_for("merchant_login"))
-    return render_template('shop.html')
+        # return redirect(url_for("merchant_login"))
+        gh = gen_hash()
+        resp.set_cookie('fairpay-merchant', gh);
+        shop_cookies[gh] = 'bbc'
+    return resp
     # login form
     None
 
@@ -114,9 +120,12 @@ def shop():
 def shop_orders():
     ck = request.cookies.get('fairpay-merchant')
     active_shop_orders = {}
-    for key, value in active_orders.items():
-        if value['shop'] == shop_cookies[ck]:
-            active_shop_orders[key] = value
+    for key, vals in active_orders.items():
+        for k, v in vals.items():
+            print(f"BURH: {v}")
+            print(f"BRUHRUHBR: {shop_cookies}, {ck}")
+            if v['shop'] == shop_cookies[ck]:
+                active_shop_orders[k] = v
     return json.dumps(active_shop_orders)
 
 @app.route('/shop/orders/update', methods=['POST'])
