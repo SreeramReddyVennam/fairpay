@@ -4,11 +4,67 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
     <title>FairPay Dashboard</title>
+    <style>
+body {
+    margin: 2vw;
+}
+
+.tab-name{
+    font-size: large;
+    padding: 10px;
+    background-color: white;
+    border: none;
+    border-bottom: 5px solid gray;
+}
+.tab-name:hover{
+    cursor: pointer;
+}
+
+.order-button{
+    display: block;
+    background-color: transparent;
+    padding: 25px;
+    border:none;
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.order-button:hover{
+    cursor: pointer;
+}
+
+#modal{
+    display: none;
+    position: fixed;
+    top:10vh;
+    left: 10vw;
+    background-color: white;
+    border: 1px solid black;
+    box-shadow: 5px 10px #888888;
+    height: 80vh;
+    width: 80vw;
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+}
+
+#close-button{
+    position:inherit;
+    right: 10vw;
+    top: 11vh;
+    background-color: transparent;
+    border: none;
+    color: gray;
+    font-size: 30px;
+}
+
+#close-button:hover{
+    cursor: pointer;
+}
+    </style>
 </head>
 <body>
-    <script type="text/javascript" src="index.js"></script>
     <div id = "tabs">
         <button class="tab-name" id="tab-new" onclick="displayNew()">New</button>
         <button class="tab-name" id="tab-requested" onclick="displayRequested()">Requested Payment</button>
@@ -18,5 +74,135 @@
 
     </div>
     <div id = "modal"></div>
+    <script>
+const MAX_ORDER_DISPLAY_LENGTH = 50;
+
+function httpGet(theUrl) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+var newOrders  = JSON.parse(httpGet('127.0.0.1:5000/' + 'shop/orders'));
+var requestedOrders  = [{id: 101, items: "oreo, banana"}];
+var confirmedOrders  = [{id: 102, items: "banana, chocolate"}];
+
+console.log(newOrders);
+
+var tabnames = ["tab-new", "tab-requested", "tab-confirmed"];
+
+// Change the underline color
+function changeTabStyle(index){
+    for(let tabname of tabnames){
+        let tab = document.getElementById(tabname);
+        if(tabname === tabnames[index])
+            tab.style.borderBottomColor = "rgb(50, 189, 182)"; 
+        else
+            tab.style.borderBottomColor = "gray";
+    }
+}
+
+function closeModal(){
+    var modal = document.getElementById("modal");
+    modal.style.display = "none";
+}
+
+function showModal(order){
+    var modal = document.getElementById("modal");
+    modal.style.display = "block";
+    modal.innerHTML = order.id + " " + order.items;
+    var closeButton = document.createElement('button');
+    closeButton.addEventListener('click', ()=>{
+        closeModal();
+    });
+    closeButton.innerHTML = "X";
+    closeButton.setAttribute('id', 'close-button');
+    modal.appendChild(closeButton);
+}
+
+// represents the type of orders being displayed on screen
+// 0 -> new, 1 -> requested, 2 -> confirmed
+var contentShown = 0;
+
+// Put new orders in the contents div
+function displayNew(){
+    contentShown = 0;
+    var contentTable = document.getElementById("contents");
+
+    // clear all data already present
+    contentTable.innerHTML = "";
+
+    // append the data
+    for(let order of newOrders){
+        var button = document.createElement("button");
+        button.setAttribute("id", order.id); // for future processing
+        button.setAttribute("class", "order-button"); // same styling for all orders
+        button.innerHTML = "#" + order.id + " " + order.items.slice(0, MAX_ORDER_DISPLAY_LENGTH)+"...";
+        // TODO: make a modal, on clicking
+        button.addEventListener('click', ()=>{
+            showModal(order)
+        });
+        contentTable.appendChild(button);
+    }
+
+    changeTabStyle(contentShown);
+}
+
+function displayRequested(){
+    contentShown = 1;
+    var contentTable = document.getElementById("contents");
+
+    // clear all data already present
+    contentTable.innerHTML = "";
+
+    // append the data
+    for(let order of requestedOrders){
+        var button = document.createElement("button");
+        button.setAttribute("id", order.id); // for future processing
+        button.setAttribute("class", "order-button"); // same styling for all orders
+        button.innerHTML = "#" + order.id + " " + order.items.slice(0, MAX_ORDER_DISPLAY_LENGTH)+"...";
+        // TODO: make a modal, on clicking
+        contentTable.appendChild(button);
+    }
+    changeTabStyle(contentShown);
+}
+
+function displayConfirmed(){
+    contentShown = 2;
+    var contentTable = document.getElementById("contents");
+
+    // clear all data already present
+    contentTable.innerHTML = "";
+
+    // append the data
+    for(let order of confirmedOrders){
+        var button = document.createElement("button");
+        button.setAttribute("id", order.id); // for future processing
+        button.setAttribute("class", "order-button"); // same styling for all orders
+        button.innerHTML = "#" + order.id + " " + order.items.slice(0, MAX_ORDER_DISPLAY_LENGTH)+"...";
+        // TODO: make a modal, on clicking
+        contentTable.appendChild(button);
+    }
+    changeTabStyle(contentShown);
+}
+
+// When the page opens
+window.onload = displayNew;
+
+// hide modal if clicked outside
+var firstclick = 1; //after opening a modal (the first click might be outside)
+document.addEventListener('click', function handleClickOutsideBox(event) {
+    if(!firstclick){
+        if (!modal.contains(event.target)) {
+            firstclick = 1;
+        closeModal();
+        }
+        }else{
+            firstclick = 0;
+    }
+});
+   
+    </script>
 </body>
 </html>

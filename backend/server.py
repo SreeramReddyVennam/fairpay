@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 
 active_orders = {
     # hash: {
-    #     orderId: {
+    #     id: {
     #         shop:
     #         items:[(name, price, quantity)]
     #         total: ,
@@ -97,26 +97,33 @@ def merchant_login():
         return render_template('login.html', 0)
     resp = make_response(redirect(url_for('shop')))
     ck = gen_hash()
-    resp.set_cookie('fairpay-merchange',ck)
+    resp.set_cookie('fairpay-merchant',ck)
     shop_cookies[ck] = request.form['username']
     return resp
 
 @app.route('/shop')
 def shop():
     ck = request.cookies.get('fairpay-merchant')
+    resp = make_response(render_template('shop.html'))
     if ck is None:
-        return redirect(url_for("merchant_login"))
-    return render_template('shop.html')
+        # return redirect(url_for("merchant_login"))
+        gh = gen_hash()
+        resp.set_cookie('fairpay-merchant', gh);
+        shop_cookies[gh] = 'bbc'
+    return resp
     # login form
     None
 
 @app.route('/shop/orders')
 def shop_orders():
-    ck = request.cookies.get('fairplay-merchant')
+    ck = request.cookies.get('fairpay-merchant')
     active_shop_orders = {}
-    for (key, value) in active_orders:
-        if value['shop'] == shop_cookies[ck]:
-            active_orders[key] = value
+    for key, vals in active_orders.items():
+        for k, v in vals.items():
+            print(f"BURH: {v}")
+            print(f"BRUHRUHBR: {shop_cookies}, {ck}")
+            if v['shop'] == shop_cookies[ck]:
+                active_shop_orders[k] = v
     return json.dumps(active_shop_orders)
 
 
