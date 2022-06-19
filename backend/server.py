@@ -1,5 +1,4 @@
-from unicodedata import name
-import uuid
+import random
 import json as jsn
 from flask import *
 from pymongo import MongoClient
@@ -29,7 +28,7 @@ def cookie():
     None
 
 def gen_hash():
-    return str(uuid.uuid4().hex)
+    return str(random.getrandbits(128))
 
 def check_password(usrname, password):
     login_details = db.shop_login_details.find_one()[usrname]
@@ -59,7 +58,7 @@ def client():
     return resp
     
 
-@app.route('/orders')
+@app.route('/orders', methods=['POST', 'GET'])
 def process_orders():
     if request.method == 'GET':
         ck = request.cookies.get('fairpay')

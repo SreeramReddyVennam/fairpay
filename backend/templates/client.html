@@ -96,20 +96,25 @@ console.log(menuItems);
 function displayMenu(shop) {
     menu.style['display'] = 'block';
     let menuTableBody = document.getElementById('menu-table')
-        .getElementsByTagName('tbody')[0];
+                                .getElementsByTagName('tbody')[0];
 
     for (let rowId = 0; rowId < tableEntries; rowId++) {
         menuTableBody.deleteRow(1);
     }
     tableEntries = 0;
 
-   for (const item of menuItems[shop]) {
+    let htmlForm = document.getElementById('menu-form');
+    htmlForm.setAttribute('action', 'orders/' + shop);
+
+    for (const item of menuItems[shop]) {
         let newRow = menuTableBody.insertRow(tableEntries + 1);
         tableEntries += 1;
 
         let quantityInput = document.createElement('input');
         quantityInput.setAttribute('type', 'number');
-        quantityInput.setAttribute('name', shop);
+        quantityInput.setAttribute('name', 
+            JSON.parse(('{' + item.slice(45)).replaceAll('\'', '\"'))['item']
+        );
 
         let entryName = newRow.insertCell(0);
         let entryPrice = newRow.insertCell(1);
@@ -127,6 +132,7 @@ function displayMenu(shop) {
 
     let submitButton = document.createElement('input');
     submitButton.setAttribute('type', 'submit');
+    submitButton.setAttribute('value', shop);
 
     let submitCell = submitRow.insertCell(0);
     submitCell.setAttribute('colspan', '3');
@@ -146,7 +152,7 @@ function displayVC() {
     displayMenu('vc');
 }
 
-displayOrders();
+let displayInterval = setInterval(displayOrders(), 1000);
     </script>
 </body>
 </html>
