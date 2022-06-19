@@ -119,6 +119,15 @@ function showModal(order){
     closeButton.innerHTML = "X";
     closeButton.setAttribute('id', 'close-button');
     modal.appendChild(closeButton);
+
+    //Adding here
+    var getPaymentButton = document.createElement('button');
+    getPaymentButton.setAttribute('onclick','somefunc()');
+    modal.appendChild(getPaymentButton);
+
+    var CancelButton = document.createElement('button');
+    CancelButton.setAttribute('onclick','Otherfunc()');
+    modal.appendChild(CancelButton);    
 }
 
 // represents the type of orders being displayed on screen
