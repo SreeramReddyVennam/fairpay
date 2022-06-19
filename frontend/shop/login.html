@@ -1,0 +1,33 @@
+<html>
+    <body>
+        <form id="login">
+             UserID <input name="UserID">
+             <br>
+             Password <input name="Password">
+             <br>
+             <input type="button" value="Submit" onclick="submitted()">
+        </form>
+        <script>
+            function submitted()
+            {
+                console.log("uuw")
+
+            const form = document.getElementById( "login" );
+            function sendData( data ) {
+                    const XHR = new XMLHttpRequest(),
+                        FD  = new FormData(form);
+
+                for( name in data ) {
+                    FD.append( name, data[ name ] );
+                }
+
+                XHR.open( 'POST', window.location + '/login' );
+
+                XHR.send( FD ); 
+            }
+
+            sendData();
+        }
+        </script>
+    </body>
+</html>
